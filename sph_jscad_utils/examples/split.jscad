@@ -5,14 +5,15 @@ const { cylinder } = jscad.primitives;
 const { translate } = jscad.transforms;
 const { union } = jscad.booleans;
 
-"use strict"
 
 const main = (params) => {
+    "use strict"
 
-    objs = split(cylinder({radius: 3, height: 4}), {axis: 'x', at: [2, 4]})
-    objs[1] = translate([0, 1, 2], objs[1])
-
-    return union(objs) 
+    const cyl = cylinder({ radius: 3, height: 2 })
+    const objs = split(cyl, { axis: 'x', at: [4, 3] })
+    objs[0] = translate([-1, 0, 0], objs[0])
+    objs[2] = translate([1, 0, 0], objs[2])
+    return union(objs)
 }
 
 module.exports = { main }

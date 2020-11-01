@@ -3,45 +3,38 @@
 (c) 2020 diesphink
 This code is licensed under MIT license (see LICENSE for details)
 
-Função split
+Function split
 
-  Recorta o objeto (obj) na posição indicada (at) em um determinado eixo (axis),
-  retornando uma matriz de objetos para cada pedaço recortado.
+  Cut the object (obj) on the indicated positions (at) on an determined axis, 
+  returning a object matrix with each slice.
 
-  Os valores possíveis para axis são:
-    0 - eixo x
-    1 - eixo y
-    2 - eixo z
+  The possible values for the axis are 'x', 'y' and 'z'.
 
-  A posição do recorte pode ser um valor único para o recorte, ou um array com
-  os diversos valores. Será recortada cada uma das posições informadas no array.
+  The possible values for the at, to indicate where to cut, are:
 
-  Se a posição do recorte (at) não for informado, o objeto será recortado pela
-  metade no eixo indicado.
+    null:   Indicates a split in half
+    number: Indicates position on the axis to cut, with regards to the object
+    array:  Indicates various positions to cut, with positions on the axis as
+            with previous option
 
-Parâmetros
-  obj:    Objeto que será recortado
-  axis:   Eixo onde será feito o recorte (0, 1 ou 2, eixos x, y e z
-          respectivamente)
-  at:     Posição no eixo onde será feito o recorte, pode ser um valor direto
-          (e.g. 3.7), uma matriz de valores (e.g. [3.7, 5, 6.8]). Se não for
-          informado, usará a metade dos extremos do objeto informado
+Parameters
+  obj:    Object to be splitted
+  axis:   Axis on which to split ('x', 'y' or 'z')
+  at:     Position on the axis to split, can be a number, or an array. If not
+          informed, the object will be split in half.
 
-Retorno
-  matriz com cada um dos pedaços do objeto recortado
+Retorns
+  matrix with each piece of the splitted object
 
-Exemplo
-  // Cria metade de um cilindro, como a projeção de um semi círculo
-  // Note que a função retorna dois objetos em um array, sendo descartado
-  // o segundo objeto
-  obj = split({
-    obj: cylinder({r: 3, h: 4}),
-    axis: 0
-  })[0]
+Example
 
-Funções extras
-  Funções splitX, slpitY e splitZ, com o mesmo comportamento indicado para
-  split, mas com o eixo já indicado no método para simplicidade
+  // Creates a cylinder
+  const cyl = cylinder({ radius: 3, height: 4 })
+
+  // Split the cylinder into 3 pieces and translates the pieces for visualization
+  const objs = split(cyl, { axis: 'x', at: [2, 4] })
+  objs[0] = translate([-1, 0, 0], objs[0])
+  objs[2] = translate([1, 0, 0], objs[2])
 
 */
 
@@ -58,12 +51,13 @@ const split = (obj, { axis = null, at = null } = {}) => {
   if (axis != 'x' && axis != 'y' && axis != 'z')
     throw new TypeError("axis must be 'x', 'y' or 'z'")
 
-  const index = axis == 'x' ? 0 : axis == 'y' ? 1 : 2
+  if (obj == null || obj.polygons == null)
+    throw new TypeError("obj must be an openjscad object")
 
+  const index = axis == 'x' ? 0 : axis == 'y' ? 1 : 2
 
   const ob = measureBoundingBox(obj)
   const cube_size = [ob[1][0] - ob[0][0], ob[1][1] - ob[0][1], ob[1][2] - ob[0][2]]
-  console.log(cube_size)
 
   // Não informado, usa metade da dimensão
   if (at == null)
@@ -72,12 +66,11 @@ const split = (obj, { axis = null, at = null } = {}) => {
   // Array com valores, usa o último e segue em loop nos outros
   // Está utilizando o último para não precisar ajustar as medidas de corte
   else if (Array.isArray(at)) {
+    at = at.sort() 
     cube_size[index] = at.pop()
     // Valor direto
   } else
     cube_size[index] = at
-
-  console.log(cube_size)
 
   const splitter = align(cuboid({ size: cube_size }), { ref: obj, begin: "xyz" })
 
