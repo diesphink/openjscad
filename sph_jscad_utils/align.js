@@ -37,7 +37,7 @@ Function align
 Parameters
 
   obj:            Object to be aligned/translated
-  ref:            Reference object or reference array ([x, y, z]). If not 
+  ref:            Reference object or reference array ([x, y, z]). If 
                   omitted, will use origins: ([0, 0, 0])
   begin:          Axes to align the object's begin to the reference begin
   beginToCenter:  Axes to align the object's begin to the reference center
