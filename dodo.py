@@ -18,8 +18,8 @@ OPENSCAD = 'openscad'
 OPENJSCAD = 'openjscad'
 
 SLIC3R = '/home/sphink/opt/prusa/prusa-slicer.AppImage'
-SLIC3R_PROFILE_FOLDER = './slic3r_profiles'
-SLIC3R_DEFAULT_PROFILES = ['pla', 'normal']
+SLIC3R_PROFILE_FOLDER = './slicer_profiles'
+SLIC3R_DEFAULT_PROFILES = ['default', 'pla', 'normal']
 
 OCTOPI_SERVER = 'pi@slartibartfast.local'
 OCTOPI_UPLOAD_FOLDER = '.octoprint/uploads/'
