@@ -1,0 +1,18 @@
+{
+  "name": "smarter_align",
+  "version": "1.0.0",
+  "description": "Smarter alignment for openjscad, using other objects as references, and allowing multiple anchors",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Diego Pereyra",
+  "license": "MIT",
+  "dependencies": {
+    "@jscad/modeling": "^2.0.0-alpha.6"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^8.2.0"
+  }
+}
