@@ -75,12 +75,13 @@ def dependencies_for_scad(scad):
 def dependencies_for_jscad(jscad):
     path = os.path.dirname(jscad)
     deps = [jscad]
-    pattern = re.compile("include\(['\"](.*)['\"]\)")
+    pattern = re.compile("require\(['\"](.*)['\"]\)")
 
     for line in open(jscad):
         for match in re.finditer(pattern, line):
             file = os.path.join(path, match.groups()[0])
-            deps += [file]
+            if not "@jscad" in file:
+                deps += [file]
 
     return deps
 
@@ -116,8 +117,6 @@ def set_env(properties):
     os.environ['SLIC3R_CUSTOM_PAUSES'] = ''
 
 def move_file(source, dest):
-    print(source)
-    print(dest)
     os.rename(source, dest)
 
 def profile_files(profiles):
