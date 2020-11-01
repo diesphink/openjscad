@@ -1,4 +1,4 @@
-const align = require('./align.js').align
+const align = require('../align.js').align
 
 const jscad = require('@jscad/modeling');
 const { cuboid, cube, sphere } = jscad.primitives;
@@ -23,3 +23,4 @@ const main = (params) => {
 }
 
 module.exports = { main }   
+ 
