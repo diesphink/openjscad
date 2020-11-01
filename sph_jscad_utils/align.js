@@ -71,6 +71,8 @@ const jscad = require("@jscad/modeling")
 const { measureBoundingBox } = jscad.measurements
 const { translate } = jscad.transforms
 
+"use strict"
+
 const align = (obj, { ref = null,
     begin = "", center = "", end = "",
     beginToCenter = "", beginToEnd = "",

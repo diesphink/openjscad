@@ -1,15 +1,14 @@
-/* test/sum.js */
-
-var expect = require('chai').expect;
+const expect = require('chai').expect;
 const jscad = require('@jscad/modeling');
 const { cube } = jscad.primitives;
 const { measureBoundingBox } = jscad.measurements
 const { translate } = jscad.transforms
 
-var align = require('../align.js').align;
+const align = require('../align.js').align;
 
+"use strict"
 
-describe('#sum()', function () {
+describe('#align()', function () {
 
   const cube1 = translate([30, 50, 80], cube({ size: 10 }))
   const testcube = cube({ size: 2 })

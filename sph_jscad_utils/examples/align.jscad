@@ -5,6 +5,8 @@ const { cuboid, cube, sphere } = jscad.primitives;
 const { translate } = jscad.transforms;
 const { union } = jscad.booleans;
 
+"use strict"
+
 const main = (params) => {
 
     // Creates a translated cube
