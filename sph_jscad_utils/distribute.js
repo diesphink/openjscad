@@ -67,7 +67,7 @@ const { translate } = jscad.transforms
 const BEGIN = 0;
 const CENTER = 1;
 const END = 2;
-const SIZE = 3;
+const GAP = 3;
 
 const distribute = (objs, { ref = null,
     begin = "", center = "", end = "", gap = "",
@@ -85,7 +85,7 @@ const distribute = (objs, { ref = null,
         const mode = begin.includes(axisName) ? BEGIN :
             center.includes(axisName) ? CENTER :
                 end.includes(axisName) ? END :
-                    gap.includes(axisName) ? SIZE : null
+                    gap.includes(axisName) ? GAP : null
 
         if (mode == null)
             return
@@ -100,7 +100,7 @@ const distribute = (objs, { ref = null,
             ret[BEGIN] = bounds[0][axis]
             ret[CENTER] = (bounds[1][axis] + bounds[0][axis]) / 2
             ret[END] = bounds[1][axis]
-            ret[SIZE] = bounds[1][axis] - bounds[0][axis]
+            ret[GAP] = bounds[1][axis] - bounds[0][axis]
             return ret
         })
 
@@ -115,14 +115,14 @@ const distribute = (objs, { ref = null,
 
             // Se recebi um range no eixo, uso ele
             ranges = [[], []]
-            for (let distmode = BEGIN; distmode <= SIZE; distmode++) {
+            for (let distmode = BEGIN; distmode <= GAP; distmode++) {
                 ranges[0][distmode] = axisName == 'x' ? rangeX[0] : axisName == 'y' ? rangeY[0] : rangeZ[0]
                 ranges[1][distmode] = axisName == 'x' ? rangeX[1] : axisName == 'y' ? rangeY[1] : rangeZ[1]
             }
         } else {
             // Se não tem um range, olha todos os objetos procurando os min/max no eixo
             ranges = metrics.reduce(function (range, m) {
-                for (var distmode = BEGIN; distmode <= SIZE; distmode++) {
+                for (var distmode = BEGIN; distmode <= GAP; distmode++) {
                     if (range[0][distmode] == null || m[distmode] < range[0][distmode])
                         range[0][distmode] = m[distmode]
                     if (range[1][distmode] == null || m[distmode] > range[1][distmode])
@@ -132,10 +132,10 @@ const distribute = (objs, { ref = null,
             }, [[], []])
         }
 
-        if (mode == SIZE) {
+        if (mode == GAP) {
             // Move os objetos considerando apenas o espaço entre eles
             const total_range = ranges[1][END] - ranges[0][BEGIN]
-            const total_size = metrics.reduce((total_size, m) => total_size += m[SIZE], 0)
+            const total_size = metrics.reduce((total_size, m) => total_size += m[GAP], 0)
 
             let space_between
             if (typeof outerGap == 'number') {
@@ -143,7 +143,7 @@ const distribute = (objs, { ref = null,
             } else if (outerGap)
                 space_between = (total_range - total_size) / (objs.length + 1)
             else
-                space_between = (total_range - total_size) / (objs.length - 1)   
+                space_between = (total_range - total_size) / (objs.length - 1)
 
             let acc = ranges[0][BEGIN];
             if (typeof outerGap == 'number')
@@ -153,7 +153,7 @@ const distribute = (objs, { ref = null,
             for (let i = 0; i < objs.length; i++) {
                 const translation = [0, 0, 0]
                 translation[axis] = acc - metrics[i][BEGIN]
-                acc += metrics[i][SIZE] += space_between
+                acc += metrics[i][GAP] += space_between
                 ret[i] = translate(translation, objs[i])
             }
         } else {
