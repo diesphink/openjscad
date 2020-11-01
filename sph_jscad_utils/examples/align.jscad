@@ -1,7 +1,7 @@
 const align = require('../align.js').align
 
 const jscad = require('@jscad/modeling');
-const { cuboid, cube, sphere } = jscad.primitives;
+const { cube, } = jscad.primitives;
 const { translate } = jscad.transforms;
 const { union } = jscad.booleans;
 
