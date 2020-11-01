@@ -80,8 +80,8 @@ const align = (obj, { ref = null,
     endToBegin = "", endToCenter = "" } = {}) => {
 
     if (obj == null || obj.polygons == null)
-        throw new TypeError("obj must be an openjscad object")  
-    
+        throw new TypeError("obj must be an openjscad object")
+
     begin = begin.toLowerCase()
     center = center.toLowerCase()
     end = end.toLowerCase()

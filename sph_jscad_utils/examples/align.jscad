@@ -13,7 +13,7 @@ const main = (params) => {
     const cube1 = translate([4, 2, 9], cube({ size: 2 }))
 
     // Creates a cube directly above (z axis) the first cube,
-    // centered on the x and y axes
+    // centered on the x and y axes 
     const cube2 = align(cube({ size: 1 }), {
         ref: cube1,
         center: "xy",
@@ -24,5 +24,4 @@ const main = (params) => {
 
 }
 
-module.exports = { main }   
- 
+module.exports = { main }
