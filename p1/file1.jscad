@@ -1,9 +1,10 @@
 const jscad = require('@jscad/modeling');
 const { booleans, primitives } = jscad
-const { cube, sphere } = primitives;
+const { cuboid, sphere } = primitives;
 
 const main = (params) => {
-	return sphere({radius: 2})  
+	console.log("teste")
+	return cuboid({size: [7, 0.5, 3]})  
 } 
 
 const teste = () => { 
@@ -11,4 +12,4 @@ const teste = () => {
 }
 
 
-module.exports = { main, teste}   
+module.exports = { main, teste} 
