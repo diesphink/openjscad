@@ -1,0 +1,17 @@
+{
+    "emeraldwalk.runonsave": {
+
+        "autoClearConsole": true,
+        "commands": [
+            {
+                "match": "\\.jscad$",
+                "cmd": "cd ${workspaceFolder}; doit run --verbosity=2  jscad_to_stl"
+            },
+            {
+                "match": "\\.js$",
+                "cmd": "cd ${workspaceFolder}; doit run --verbosity=2 jscad_to_stl"
+            },
+        ]
+    },
+
+}
