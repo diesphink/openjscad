@@ -79,8 +79,9 @@ def dependencies_for_jscad(jscad):
 
     for line in open(jscad):
         for match in re.finditer(pattern, line):
-            file = os.path.join(path, match.groups()[0])
-            if not "@jscad" in file:
+            ref = match.groups()[0]
+            if ref.startswith("."):
+                file = os.path.join(path, ref)
                 deps += [file]
 
     return deps
