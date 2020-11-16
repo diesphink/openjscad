@@ -1,4 +1,17 @@
 {
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/package*.json": true,
+        "**/.gitignore": true,
+        ".doit.db": true,
+        "__pycache__": true,
+        "**/node_modules": true,
+        ".vscode": true
+    },
     "emeraldwalk.runonsave": {
 
         "autoClearConsole": true,
