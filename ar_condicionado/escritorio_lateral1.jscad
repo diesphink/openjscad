@@ -2,6 +2,7 @@ const { subtract, union, intersect } = require('@jscad/modeling/src/operations/b
 const { cuboid, roundedCuboid, cube, cylinder } = require('@jscad/modeling/src/primitives');
 
 const { align } = require('sph_jscad_utils/align.js')
+const { split } = require('sph_jscad_utils/split.js')
 
 const { dim_isopor, dim_base, dim_pin } = require('./escritorio_lateral.js')
 
@@ -14,7 +15,7 @@ const main = (params) => {
 
     const pin = align(cuboid({ size: dim_pin, }), { ref: base, center: 'xz', endToBegin: 'y' })
 
-    return union(subtract(base, isopor), pin)
+    return split(union(subtract(base, isopor), pin), {axis: 'x', at: 21})[0]
 }
 
 module.exports = { main }
