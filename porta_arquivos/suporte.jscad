@@ -13,8 +13,8 @@ const main = (params) => {
 
     const dim = [30, 13, 35]
     const dim_suportes = 3 
-    const r_parafusos = 1.5
-    const espaco_parafusos_madeira = 11
+    const r_parafusos = 2
+    const espaco_parafusos_madeira = 12
     const X = 0; const Y = 1; const Z = 2;
 
     // Estrutura principal
@@ -38,8 +38,15 @@ const main = (params) => {
 
     let base = subtract(union(vertical, horizontal, lateral1, lateral2), parafusos_madeira, ranhuras)
     base = rotateY(Math.PI/2, base)
-        
+
+
     return base
+    // return union(
+    //     base,
+    //     translate([0, 15, 0], base),
+    //     translate([38, 0, 0], base),
+    //     translate([38, 15, 0], base)
+    // )
 
 } 
 
