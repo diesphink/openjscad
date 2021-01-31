@@ -30,20 +30,15 @@ const trilho = (params) => {
     
     var parafuso_maior_1 = extrudeLinear({height: 25}, hull(circle({radius: m_menor}), translate([0, 2, 0], circle({radius: m_menor}))))
     parafuso_maior_1 = translate([-5, 0, 0], align(rotateX(Math.PI/2, parafuso_maior_1), {ref: parafuso_circular, center: 'z', endToBegin: 'x'}))
+
     var parafuso_maior_2 = translate([-10.6, 0, 0], align(rotateY(Math.PI/2, parafuso_maior_1), {ref: parafuso_maior_1, center: 'z', endToBegin: 'x'}))
 
     const grupo_parafusos = union( parafuso_circular, parafuso_maior_1, parafuso_maior_2)
-
     const gp1 = translate([30, 0, -2], align(grupo_parafusos, {ref: base, begin: 'x', end: 'zy'}))
-
     const gp2 = translate([65, 0, 0], align(grupo_parafusos, {ref: gp1, beginToEnd:'x', end: 'zy'}))
-
     const gp3 = translate([97, 0, 0], align(grupo_parafusos, {ref: gp2, beginToEnd:'x', end: 'zy'}))
 
-    
-    const partes = split(subtract(base, espaco_ganchos, gp1, gp2, gp3), {axis: 'x', at: 149})
-
-    return partes
+    return split(subtract(base, espaco_ganchos, gp1, gp2, gp3), {axis: 'x', at: 149})
 } 
 
 const main = (params) => {
