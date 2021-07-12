@@ -2,7 +2,7 @@ const { subtract } = require("@jscad/modeling/src/operations/booleans");
 const { cuboid } = require("@jscad/modeling/src/primitives");
 
 const { align } = require("sph_jscad_utils/align.js");
-const { xyRoundedCuboid } = require("sph_jscad_utils/xyroundedcuboid.js");
+const { sphRoundedCuboid } = require("sph_jscad_utils/sphroundedcuboid.js");
 const { dim } = require("./dimensions.js");
 
 const x = 0;
@@ -18,7 +18,7 @@ const gen_tomada = () => {
     dim.caixa.size[z] + paredes[z],
   ];
 
-  let base_tomada = xyRoundedCuboid({ size: dim_base_tomada, roundRadius: 3 });
+  let base_tomada = sphRoundedCuboid({ size: dim_base_tomada, roundRadius: 3, straightOn: 'z' });
 
   let tomada_superior = align(cuboid({ size: superior }), { ref: base_tomada, center: "x", end: "yz" });
   let tomada_inferior = align(cuboid({ size: inferior }), { ref: base_tomada, center: "x", end: "z", begin: "y" });

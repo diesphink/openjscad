@@ -5,7 +5,7 @@ const { cuboid, roundedCuboid } = require("@jscad/modeling/src/primitives");
 const { align } = require("sph_jscad_utils/align.js");
 const { screw } = require("sph_jscad_utils/screw.js");
 const { split } = require("sph_jscad_utils/split.js");
-const { xyRoundedCuboid } = require("sph_jscad_utils/xyroundedcuboid.js");
+const { sphRoundedCuboid } = require("sph_jscad_utils/sphroundedcuboid.js");
 const { dim } = require("./dimensions.js");
 
 const x = 0;
@@ -33,7 +33,7 @@ const gen_buraco_suporte_kad = (base) => {
 };
 
 const gen_trilho = (size, base, { outerRadius = 2 } = {}) => {
-  let trilhos = align(xyRoundedCuboid({ size: [size[x], size[y], trilho[z]], roundRadius: outerRadius }), {
+  let trilhos = align(sphRoundedCuboid({ size: [size[x], size[y], trilho[z]], roundRadius: outerRadius, straightOn: 'z' }), {
     ref: base,
     center: "xy",
     endToBegin: "z",

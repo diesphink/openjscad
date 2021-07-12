@@ -3,7 +3,7 @@ const { rotateZ, rotateY } = require("@jscad/modeling/src/operations/transforms"
 const { cuboid, cylinder, cylinderElliptic } = require("@jscad/modeling/src/primitives");
 
 const { align } = require("sph_jscad_utils/align.js");
-const { xyRoundedCuboid } = require("sph_jscad_utils/xyroundedcuboid.js");
+const { sphRoundedCuboid } = require("sph_jscad_utils/sphroundedcuboid.js");
 const { screw, STYLE_CYLINDER } = require("sph_jscad_utils/screw.js");
 const { dim } = require("./dimensions.js");
 const { split } = require("sph_jscad_utils/split.js");
@@ -13,13 +13,14 @@ const y = 1;
 const z = 2;
 
 const gen_caixa = (size, paredes, { innerRadius = 1, outerRadius = 2 } = {}) => {
-  let base = xyRoundedCuboid({ size: size, roundRadius: outerRadius });
+  let base = sphRoundedCuboid({ size: size, roundRadius: outerRadius, straightOn: "z" });
   base = subtract(
     base,
     align(
-      xyRoundedCuboid({
+      sphRoundedCuboid({
         size: [size[x] - 2 * paredes[x], size[y] - 2 * paredes[y], size[z] - paredes[z]],
         roundRadius: innerRadius,
+        straightOn: "z",
       }),
       { ref: base, center: "xy", end: "z" }
     )
@@ -30,11 +31,10 @@ const gen_caixa = (size, paredes, { innerRadius = 1, outerRadius = 2 } = {}) => 
 const gen_suportes = (caixa, { axis = "x" } = {}) => {
   let center = axis == "x" ? "y" : "x";
 
-  let suporte = suporte_m3()
-  if (axis == "y") suporte = rotateZ(Math.PI/2, suporte);
+  let suporte = suporte_m3();
+  if (axis == "y") suporte = rotateZ(Math.PI / 2, suporte);
 
   let sup1 = align(suporte, { ref: caixa, center, end: "z", endToBegin: axis });
-
 
   let sup2 = align(rotateZ(Math.PI, sup1), { ref: caixa, center, end: "z", beginToEnd: axis });
   return union(sup1, sup2);
