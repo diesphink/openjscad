@@ -26,7 +26,7 @@ const main = (params) => {
 
   let tomada = gen_tomada();
 
-  tomada = align(tomada, { ref: caixa, end: "xy", begin: "z" });
+  tomada = align(tomada, { ref: caixa, end: "xy", begin: "z", margins: [0, dim.caixa.paredes[y], 0] });
 
   var wagos = rotateZ(Math.PI / 2, wago3er());
   wagos = union(wagos, align(wagos, { ref: wagos, beginToEnd: "x", margins: [3, 0, 0] }));

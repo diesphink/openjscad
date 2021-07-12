@@ -27,7 +27,7 @@ const gen_tomada = () => {
 };
 
 const gen_buraco_tomada = (tomada) => {
-  return align(cuboid({ size: dim.tomada.buraco }), { ref: tomada, center: "x", end: "yz" });
+  return align(cuboid({ size: dim.tomada.buraco }), { ref: tomada, center: "x", end: "z", beginToEnd: "y" });
 };
 
 module.exports = { gen_tomada, gen_buraco_tomada };
