@@ -82,7 +82,10 @@ def dependencies_for_jscad(jscad):
             ref = match.groups()[0]
             if ref.startswith("."):
                 file = os.path.join(path, ref)
-                deps += [file]
+                deps += dependencies_for_jscad(file)
+            if ref.startswith("sph_jscad_utils"):
+                deps += dependencies_for_jscad(ref)
+
 
     return deps
 
