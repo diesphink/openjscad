@@ -66,7 +66,9 @@ const split = (obj, { axis = null, at = null } = {}) => {
   // Array com valores, usa o último e segue em loop nos outros
   // Está utilizando o último para não precisar ajustar as medidas de corte
   else if (Array.isArray(at)) {
-    at = at.sort()
+    at = at.sort(function(a, b) {
+      return a - b;
+    });
     cube_size[index] = at.pop()
     // Valor direto
   } else
