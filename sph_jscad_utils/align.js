@@ -73,11 +73,15 @@ const { translate } = jscad.transforms
 
 "use strict"
 
+const x = 0;
+const y = 1;
+const z = 2;
+
 const align = (obj, { ref = null,
     begin = "", center = "", end = "",
     beginToCenter = "", beginToEnd = "",
     centerToBegin = "", centerToEnd = "",
-    endToBegin = "", endToCenter = "" } = {}) => {
+    endToBegin = "", endToCenter = "", margins = [0, 0, 0], margin= 0 } = {}) => {
 
     if (obj == null || obj.polygons == null)
         throw new TypeError("obj must be an openjscad object")
@@ -98,28 +102,39 @@ const align = (obj, { ref = null,
     if (ref == null)
         rb = [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }]
     else if (Array.isArray(ref))
-        rb = [{ x: ref[0], y: ref[1], z: ref[2] }, { x: ref[0], y: ref[1], z: ref[2] }]
+        rb = [{ x: ref[x], y: ref[y], z: ref[z] }, { x: ref[x], y: ref[y], z: ref[z] }]
     else
         rb = measureBoundingBox(ref)
 
-    const bRef = rb[0]
+    // Begin (reference/obj)
+    const bRef = rb[0] 
     const bObj = ob[0]
-    const cRef = [(rb[0][0] + rb[1][0]) / 2, (rb[0][1] + rb[1][1]) / 2, (rb[0][2] + rb[1][2]) / 2]
-    const cObj = [(ob[0][0] + ob[1][0]) / 2, (ob[0][1] + ob[1][1]) / 2, (ob[0][2] + ob[1][2]) / 2]
-    const eRef = rb[1]
+
+    // End (reference/obj)
+    const eRef = rb[1] 
     const eObj = ob[1]
+
+    // Center (reference/obj)
+    const cRef = [(bRef[x] + eRef[x]) / 2, (bRef[y] + eRef[y]) / 2, (bRef[z] + eRef[z]) / 2]
+    const cObj = [(bObj[x] + eObj[x]) / 2, (bObj[y] + eObj[y]) / 2, (bObj[z] + eObj[z]) / 2]
+
+    // Deltas to move
     const deltas = [0, 0, 0]
 
     const axes = ["x", "y", "z"]
     axes.forEach((axis, i) => {
         let from = null
         let to = null
-        if (begin.includes(axis) || beginToCenter.includes(axis) || beginToEnd.includes(axis))
+        if (begin.includes(axis) || beginToCenter.includes(axis) || beginToEnd.includes(axis)) {
             from = bObj[i]
+            deltas[i] = margins[i] + margin
+        }
         if (centerToBegin.includes(axis) || center.includes(axis) || centerToEnd.includes(axis))
             from = cObj[i]
-        if (endToBegin.includes(axis) || endToCenter.includes(axis) || end.includes(axis))
+        if (endToBegin.includes(axis) || endToCenter.includes(axis) || end.includes(axis)) {
             from = eObj[i]
+            deltas[i] = -margins[i] - margin
+        }
 
         if (begin.includes(axis) || centerToBegin.includes(axis) || endToBegin.includes(axis))
             to = bRef[i]
@@ -129,7 +144,8 @@ const align = (obj, { ref = null,
             to = eRef[i]
 
         if (from != null && to != null)
-            deltas[i] = to - from
+            deltas[i] = deltas[i] + to - from
+
     })
 
     return translate(deltas, obj)
