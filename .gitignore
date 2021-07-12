@@ -3,3 +3,4 @@ node_modules/
 *.doit.db
 /things/
 /venv/
+/slartibartfast/package-lock.json
