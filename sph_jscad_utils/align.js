@@ -67,88 +67,97 @@ Example:
 
 */
 
-const jscad = require("@jscad/modeling")
-const { measureBoundingBox } = jscad.measurements
-const { translate } = jscad.transforms
+const jscad = require("@jscad/modeling");
+const { measureBoundingBox } = jscad.measurements;
+const { translate } = jscad.transforms;
 
-"use strict"
+("use strict");
 
 const x = 0;
 const y = 1;
 const z = 2;
 
-const align = (obj, { ref = null,
-    begin = "", center = "", end = "",
-    beginToCenter = "", beginToEnd = "",
-    centerToBegin = "", centerToEnd = "",
-    endToBegin = "", endToCenter = "", margins = [0, 0, 0], margin= 0 } = {}) => {
+const align = (
+  obj,
+  {
+    ref = null,
+    begin = "",
+    center = "",
+    end = "",
+    beginToCenter = "",
+    beginToEnd = "",
+    centerToBegin = "",
+    centerToEnd = "",
+    endToBegin = "",
+    endToCenter = "",
+    margins = [0, 0, 0],
+    margin = 0,
+  } = {}
+) => {
+  if (obj == null || obj.polygons == null) throw new TypeError("obj must be an openjscad object");
 
-    if (obj == null || obj.polygons == null)
-        throw new TypeError("obj must be an openjscad object")
+  begin = begin.toLowerCase();
+  center = center.toLowerCase();
+  end = end.toLowerCase();
+  beginToCenter = beginToCenter.toLowerCase();
+  beginToEnd = beginToEnd.toLowerCase();
+  centerToBegin = centerToBegin.toLowerCase();
+  centerToEnd = centerToEnd.toLowerCase();
+  endToBegin = endToBegin.toLowerCase();
+  endToCenter = endToCenter.toLowerCase();
 
-    begin = begin.toLowerCase()
-    center = center.toLowerCase()
-    end = end.toLowerCase()
-    beginToCenter = beginToCenter.toLowerCase()
-    beginToEnd = beginToEnd.toLowerCase()
-    centerToBegin = centerToBegin.toLowerCase()
-    centerToEnd = centerToEnd.toLowerCase()
-    endToBegin = endToBegin.toLowerCase()
-    endToCenter = endToCenter.toLowerCase()
+  const ob = measureBoundingBox(obj);
 
-    const ob = measureBoundingBox(obj)
+  let rb = null;
+  if (ref == null)
+    rb = [
+      { x: 0, y: 0, z: 0 },
+      { x: 0, y: 0, z: 0 },
+    ];
+  else if (Array.isArray(ref))
+    rb = [
+      { x: ref[x], y: ref[y], z: ref[z] },
+      { x: ref[x], y: ref[y], z: ref[z] },
+    ];
+  else rb = measureBoundingBox(ref);
 
-    let rb = null
-    if (ref == null)
-        rb = [{ x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 0 }]
-    else if (Array.isArray(ref))
-        rb = [{ x: ref[x], y: ref[y], z: ref[z] }, { x: ref[x], y: ref[y], z: ref[z] }]
-    else
-        rb = measureBoundingBox(ref)
+  // Begin (reference/obj)
+  const bRef = rb[0];
+  const bObj = ob[0];
 
-    // Begin (reference/obj)
-    const bRef = rb[0] 
-    const bObj = ob[0]
+  // End (reference/obj)
+  const eRef = rb[1];
+  const eObj = ob[1];
 
-    // End (reference/obj)
-    const eRef = rb[1] 
-    const eObj = ob[1]
+  // Center (reference/obj)
+  const cRef = [(bRef[x] + eRef[x]) / 2, (bRef[y] + eRef[y]) / 2, (bRef[z] + eRef[z]) / 2];
+  const cObj = [(bObj[x] + eObj[x]) / 2, (bObj[y] + eObj[y]) / 2, (bObj[z] + eObj[z]) / 2];
 
-    // Center (reference/obj)
-    const cRef = [(bRef[x] + eRef[x]) / 2, (bRef[y] + eRef[y]) / 2, (bRef[z] + eRef[z]) / 2]
-    const cObj = [(bObj[x] + eObj[x]) / 2, (bObj[y] + eObj[y]) / 2, (bObj[z] + eObj[z]) / 2]
+  // Deltas to move
+  const deltas = [0, 0, 0];
 
-    // Deltas to move
-    const deltas = [0, 0, 0]
+  const axes = ["x", "y", "z"];
+  axes.forEach((axis, i) => {
+    let from = null;
+    let to = null;
+    if (begin.includes(axis) || beginToCenter.includes(axis) || beginToEnd.includes(axis)) {
+      from = bObj[i];
+      deltas[i] = margins[i] + margin;
+    }
+    if (centerToBegin.includes(axis) || center.includes(axis) || centerToEnd.includes(axis)) from = cObj[i];
+    if (endToBegin.includes(axis) || endToCenter.includes(axis) || end.includes(axis)) {
+      from = eObj[i];
+      deltas[i] = -margins[i] - margin;
+    }
 
-    const axes = ["x", "y", "z"]
-    axes.forEach((axis, i) => {
-        let from = null
-        let to = null
-        if (begin.includes(axis) || beginToCenter.includes(axis) || beginToEnd.includes(axis)) {
-            from = bObj[i]
-            deltas[i] = margins[i] + margin
-        }
-        if (centerToBegin.includes(axis) || center.includes(axis) || centerToEnd.includes(axis))
-            from = cObj[i]
-        if (endToBegin.includes(axis) || endToCenter.includes(axis) || end.includes(axis)) {
-            from = eObj[i]
-            deltas[i] = -margins[i] - margin
-        }
+    if (begin.includes(axis) || centerToBegin.includes(axis) || endToBegin.includes(axis)) to = bRef[i];
+    if (beginToCenter.includes(axis) || center.includes(axis) || endToCenter.includes(axis)) to = cRef[i];
+    if (beginToEnd.includes(axis) || centerToEnd.includes(axis) || end.includes(axis)) to = eRef[i];
 
-        if (begin.includes(axis) || centerToBegin.includes(axis) || endToBegin.includes(axis))
-            to = bRef[i]
-        if (beginToCenter.includes(axis) || center.includes(axis) || endToCenter.includes(axis))
-            to = cRef[i]
-        if (beginToEnd.includes(axis) || centerToEnd.includes(axis) || end.includes(axis))
-            to = eRef[i]
+    if (from != null && to != null) deltas[i] = deltas[i] + to - from;
+  });
 
-        if (from != null && to != null)
-            deltas[i] = deltas[i] + to - from
+  return translate(deltas, obj);
+};
 
-    })
-
-    return translate(deltas, obj)
-}
-
-module.exports = { align }
+module.exports = { align };

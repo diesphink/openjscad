@@ -38,48 +38,41 @@ Example
 
 */
 
-const jscad = require("@jscad/modeling")
-const { align } = require("./align.js")
+const jscad = require("@jscad/modeling");
+const { align } = require("./align.js");
 const { cuboid } = jscad.primitives;
 const { intersect, subtract } = jscad.booleans;
-const { measureBoundingBox } = jscad.measurements
+const { measureBoundingBox } = jscad.measurements;
 
-"use strict"
+("use strict");
 
 const split = (obj, { axis = null, at = null } = {}) => {
+  if (axis != "x" && axis != "y" && axis != "z") throw new TypeError("axis must be 'x', 'y' or 'z'");
 
-  if (axis != 'x' && axis != 'y' && axis != 'z')
-    throw new TypeError("axis must be 'x', 'y' or 'z'")
+  if (obj == null || obj.polygons == null) throw new TypeError("obj must be an openjscad object");
 
-  if (obj == null || obj.polygons == null)
-    throw new TypeError("obj must be an openjscad object")
+  const index = axis == "x" ? 0 : axis == "y" ? 1 : 2;
 
-  const index = axis == 'x' ? 0 : axis == 'y' ? 1 : 2
-
-  const ob = measureBoundingBox(obj)
-  const cube_size = [ob[1][0] - ob[0][0], ob[1][1] - ob[0][1], ob[1][2] - ob[0][2]]
+  const ob = measureBoundingBox(obj);
+  const cube_size = [ob[1][0] - ob[0][0], ob[1][1] - ob[0][1], ob[1][2] - ob[0][2]];
 
   // Não informado, usa metade da dimensão
-  if (at == null)
-    cube_size[index] = cube_size[index] / 2
-
+  if (at == null) cube_size[index] = cube_size[index] / 2;
   // Array com valores, usa o último e segue em loop nos outros
   // Está utilizando o último para não precisar ajustar as medidas de corte
   else if (Array.isArray(at)) {
-    at = at.sort(function(a, b) {
+    at = at.sort(function (a, b) {
       return a - b;
     });
-    cube_size[index] = at.pop()
+    cube_size[index] = at.pop();
     // Valor direto
-  } else
-    cube_size[index] = at
+  } else cube_size[index] = at;
 
-  const splitter = align(cuboid({ size: cube_size }), { ref: obj, begin: "xyz" })
+  const splitter = align(cuboid({ size: cube_size }), { ref: obj, begin: "xyz" });
 
   if (Array.isArray(at) && at.length >= 1) {
-    return split(intersect(obj, splitter), { axis, at }).concat([subtract(obj, splitter)])
-  } else
-    return [intersect(obj, splitter), subtract(obj, splitter)]
-}
+    return split(intersect(obj, splitter), { axis, at }).concat([subtract(obj, splitter)]);
+  } else return [intersect(obj, splitter), subtract(obj, splitter)];
+};
 
-module.exports = { split }    
+module.exports = { split };

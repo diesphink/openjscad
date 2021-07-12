@@ -26,7 +26,7 @@ const screw = (diameter, length, { head_length = 0, head_diameter = 8, head_styl
       }
     );
   } else if (head_style == STYLE_CYLINDER) {
-    head = align(cylinder({ height: head_length, radius: head_diameter/2 }), {
+    head = align(cylinder({ height: head_length, radius: head_diameter / 2 }), {
       ref: body,
       center: "xy",
       beginToEnd: "z",

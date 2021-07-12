@@ -58,123 +58,137 @@ Example:
 
 */
 
-const jscad = require("@jscad/modeling")
-const { measureBoundingBox } = jscad.measurements
-const { translate } = jscad.transforms
+const jscad = require("@jscad/modeling");
+const { measureBoundingBox } = jscad.measurements;
+const { translate } = jscad.transforms;
 
-"use strict"
+("use strict");
 
 const BEGIN = 0;
 const CENTER = 1;
 const END = 2;
 const GAP = 3;
 
-const distribute = (objs, { ref = null,
-    begin = "", center = "", end = "", gap = "",
-    rangeX = null, rangeY = null, rangeZ = null,
-    outerGap = false } = {}) => {
+const distribute = (
+  objs,
+  {
+    ref = null,
+    begin = "",
+    center = "",
+    end = "",
+    gap = "",
+    rangeX = null,
+    rangeY = null,
+    rangeZ = null,
+    outerGap = false,
+  } = {}
+) => {
+  if (objs == null || !Array.isArray(objs)) throw new TypeError("objs must be an array of openjscad objects");
 
-    if (objs == null || !(Array.isArray(objs)))
-        throw new TypeError("objs must be an array of openjscad objects")
+  const ret = [];
 
-    const ret = []
+  const axes = ["x", "y", "z"];
+  axes.forEach((axisName, axis) => {
+    const mode = begin.includes(axisName)
+      ? BEGIN
+      : center.includes(axisName)
+      ? CENTER
+      : end.includes(axisName)
+      ? END
+      : gap.includes(axisName)
+      ? GAP
+      : null;
 
-    const axes = ["x", "y", "z"]
-    axes.forEach((axisName, axis) => {
+    if (mode == null) return;
 
-        const mode = begin.includes(axisName) ? BEGIN :
-            center.includes(axisName) ? CENTER :
-                end.includes(axisName) ? END :
-                    gap.includes(axisName) ? GAP : null
+    // Ordena os objetos no array com base na ordem no eixo indicado
+    objs = objs.sort((o1, o2) => measureBoundingBox(o1)[0][axis] - measureBoundingBox(o2)[0][axis]);
 
-        if (mode == null)
-            return
+    // Coleta cada uma das métricas relevantes
+    const metrics = objs.map((o) => {
+      const bounds = measureBoundingBox(o);
+      const ret = [];
+      ret[BEGIN] = bounds[0][axis];
+      ret[CENTER] = (bounds[1][axis] + bounds[0][axis]) / 2;
+      ret[END] = bounds[1][axis];
+      ret[GAP] = bounds[1][axis] - bounds[0][axis];
+      return ret;
+    });
 
-        // Ordena os objetos no array com base na ordem no eixo indicado
-        objs = objs.sort((o1, o2) => measureBoundingBox(o1)[0][axis] - measureBoundingBox(o2)[0][axis])
+    // ranges possui os min/max dentro do eixo
+    // é uma matriz bidimensional com o primeiro índice indicando 0: mins, 1: maxes
+    // e o segundo índice indicando os valores min/max para cada modo de distribute
+    let ranges = null;
 
-        // Coleta cada uma das métricas relevantes
-        const metrics = objs.map(o => {
-            const bounds = measureBoundingBox(o)
-            const ret = []
-            ret[BEGIN] = bounds[0][axis]
-            ret[CENTER] = (bounds[1][axis] + bounds[0][axis]) / 2
-            ret[END] = bounds[1][axis]
-            ret[GAP] = bounds[1][axis] - bounds[0][axis]
-            return ret
-        })
+    if (
+      (axisName == "x" && rangeX != null) ||
+      (axisName == "y" && rangeY != null) ||
+      (axisName == "z" && rangeZ != null)
+    ) {
+      // Se recebi um range no eixo, uso ele
+      ranges = [[], []];
+      for (let distmode = BEGIN; distmode <= GAP; distmode++) {
+        ranges[0][distmode] = axisName == "x" ? rangeX[0] : axisName == "y" ? rangeY[0] : rangeZ[0];
+        ranges[1][distmode] = axisName == "x" ? rangeX[1] : axisName == "y" ? rangeY[1] : rangeZ[1];
+      }
+    } else {
+      // Se não tem um range, olha todos os objetos procurando os min/max no eixo
+      ranges = metrics.reduce(
+        function (range, m) {
+          for (var distmode = BEGIN; distmode <= GAP; distmode++) {
+            if (range[0][distmode] == null || m[distmode] < range[0][distmode]) range[0][distmode] = m[distmode];
+            if (range[1][distmode] == null || m[distmode] > range[1][distmode]) range[1][distmode] = m[distmode];
+          }
+          return range;
+        },
+        [[], []]
+      );
+    }
 
-        // ranges possui os min/max dentro do eixo
-        // é uma matriz bidimensional com o primeiro índice indicando 0: mins, 1: maxes
-        // e o segundo índice indicando os valores min/max para cada modo de distribute
-        let ranges = null
+    if (mode == GAP) {
+      // Move os objetos considerando apenas o espaço entre eles
+      const total_range = ranges[1][END] - ranges[0][BEGIN];
+      const total_size = metrics.reduce((total_size, m) => (total_size += m[GAP]), 0);
 
-        if ((axisName == 'x' && rangeX != null)
-            || (axisName == 'y' && rangeY != null)
-            || (axisName == 'z' && rangeZ != null)) {
+      let space_between;
+      if (typeof outerGap == "number") {
+        space_between = (total_range - total_size - 2 * outerGap) / (objs.length - 1);
+      } else if (outerGap) space_between = (total_range - total_size) / (objs.length + 1);
+      else space_between = (total_range - total_size) / (objs.length - 1);
 
-            // Se recebi um range no eixo, uso ele
-            ranges = [[], []]
-            for (let distmode = BEGIN; distmode <= GAP; distmode++) {
-                ranges[0][distmode] = axisName == 'x' ? rangeX[0] : axisName == 'y' ? rangeY[0] : rangeZ[0]
-                ranges[1][distmode] = axisName == 'x' ? rangeX[1] : axisName == 'y' ? rangeY[1] : rangeZ[1]
-            }
-        } else {
-            // Se não tem um range, olha todos os objetos procurando os min/max no eixo
-            ranges = metrics.reduce(function (range, m) {
-                for (var distmode = BEGIN; distmode <= GAP; distmode++) {
-                    if (range[0][distmode] == null || m[distmode] < range[0][distmode])
-                        range[0][distmode] = m[distmode]
-                    if (range[1][distmode] == null || m[distmode] > range[1][distmode])
-                        range[1][distmode] = m[distmode]
-                }
-                return range
-            }, [[], []])
-        }
+      let acc = ranges[0][BEGIN];
+      if (typeof outerGap == "number") acc += outerGap;
+      else if (outerGap) acc += space_between;
+      for (let i = 0; i < objs.length; i++) {
+        const translation = [0, 0, 0];
+        translation[axis] = acc - metrics[i][BEGIN];
+        acc += metrics[i][GAP] += space_between;
+        ret[i] = translate(translation, objs[i]);
+      }
+    } else {
+      // Move os objetos para o método simples (begin, center, end)
+      const space_between = (ranges[1][mode] - ranges[0][mode]) / (objs.length - 1);
+      for (let i = 0; i < objs.length; i++) {
+        const translation = [0, 0, 0];
+        translation[axis] = ranges[0][mode] + i * space_between - metrics[i][mode];
+        ret[i] = translate(translation, objs[i]);
+      }
+    }
 
-        if (mode == GAP) {
-            // Move os objetos considerando apenas o espaço entre eles
-            const total_range = ranges[1][END] - ranges[0][BEGIN]
-            const total_size = metrics.reduce((total_size, m) => total_size += m[GAP], 0)
+    objs = ret;
+  });
 
-            let space_between
-            if (typeof outerGap == 'number') {
-                space_between = (total_range - total_size - 2 * outerGap) / (objs.length - 1)
-            } else if (outerGap)
-                space_between = (total_range - total_size) / (objs.length + 1)
-            else
-                space_between = (total_range - total_size) / (objs.length - 1)
+  return objs;
+};
 
-            let acc = ranges[0][BEGIN];
-            if (typeof outerGap == 'number')
-                acc += outerGap;
-            else if (outerGap)
-                acc += space_between;
-            for (let i = 0; i < objs.length; i++) {
-                const translation = [0, 0, 0]
-                translation[axis] = acc - metrics[i][BEGIN]
-                acc += metrics[i][GAP] += space_between
-                ret[i] = translate(translation, objs[i])
-            }
-        } else {
-            // Move os objetos para o método simples (begin, center, end)
-            const space_between = (ranges[1][mode] - ranges[0][mode]) / (objs.length - 1)
-            for (let i = 0; i < objs.length; i++) {
-                const translation = [0, 0, 0]
-                translation[axis] = ranges[0][mode] + (i * space_between) - metrics[i][mode]
-                ret[i] = translate(translation, objs[i])
-            }
-        }
+const distributeX = (objs, { outerGap, rangeX } = {}) => {
+  return distribute(objs, { gap: "x", outerGap, rangeX });
+};
+const distributeY = (objs, { outerGap, rangeY } = {}) => {
+  return distribute(objs, { gap: "y", outerGap, rangeY });
+};
+const distributeZ = (objs, { outerGap, rangeZ } = {}) => {
+  return distribute(objs, { gap: "z", outerGap, rangeZ });
+};
 
-        objs = ret
-    })
-
-    return objs
-
-}
-
-const distributeX = (objs, { outerGap, rangeX } = {}) => { return distribute(objs, { gap: "x", outerGap, rangeX }) }
-const distributeY = (objs, { outerGap, rangeY } = {}) => { return distribute(objs, { gap: "y", outerGap, rangeY }) }
-const distributeZ = (objs, { outerGap, rangeZ } = {}) => { return distribute(objs, { gap: "z", outerGap, rangeZ }) }
-
-module.exports = { distribute, distributeX, distributeY, distributeZ }
+module.exports = { distribute, distributeX, distributeY, distributeZ };
