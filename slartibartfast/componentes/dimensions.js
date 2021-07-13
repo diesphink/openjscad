@@ -5,8 +5,8 @@ const z = 2;
 const dim = {};
 
 dim.caixa = {
-  size: [130, 70, 30],
-  paredes: [2, 2, 2],
+  size: [130, 70, 35],
+  paredes: [2, 2, 7],
   innerRadius: 1,
   outerRadius: 2,
 };

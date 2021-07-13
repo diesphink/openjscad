@@ -11,6 +11,7 @@ const { gen_caixa, gen_tampa, gen_suportes } = require("./componentes/caixa.js")
 const { wago3er } = require("./componentes/wago-3er-solo.js");
 const { gen_suporte_kad, gen_buraco_suporte_kad, gen_trilho } = require("./componentes/fixador-kad.js");
 const { dim } = require("./componentes/dimensions.js");
+const { buraco_kad_holder } = require("sph_jscad_utils/kad_holder.js");
 
 const x = 0;
 const y = 1;
@@ -45,37 +46,16 @@ const main = (params) => {
     margins: [dim.caixa.paredes[x] + 3, 0, dim.caixa.paredes[z]],
   });
 
-  let c110v2 = align(gen_buraco_c110v(), {
-    ref: caixa,
-    begin: "z",
-    end: "y",
-    center: "x",
-    margins: [0, 0, dim.caixa.paredes[z]],
-  });
-
-  [, c110v2, tomada] = distribute([gen_buraco_relay(relay), c110v2, tomada], { gap: "x" });
-
-  let interruptor = align(gen_buraco_interruptor(), {
-    ref: c110v2,
-    center: "x",
-    end: "y",
-    beginToEnd: "z",
-    margins: [0, 0, (dim.caixa.size[z] - dim.caixa.paredes[z] - dim.c110v.size[z] - dim.interruptor.size[z]) / 2],
-  });
-
-  let kad = align(gen_suporte_kad(), { ref: caixa, center: "xy", begin: "z" });
-  let trilhos = gen_trilho(dim.caixa.size, kad, {outerRadius: dim.caixa.outerRadius})
+  let trilho_kad = align(buraco_kad_holder(dim.caixa.size[y]), {ref: caixa, center: 'x', begin: 'z', end: 'y', margins: [0, 5, 0]})
 
   let suportes = gen_suportes(caixa, { axis: "y" });
 
   return subtract(
-    union(caixa, tomada, wagos, relay, suportes, kad, trilhos),
+    union(caixa, tomada, wagos, suportes, relay),
     gen_buraco_tomada(tomada),
     gen_buraco_relay(relay),
-    gen_buraco_suporte_kad(kad),
-    c110v,
-    c110v2,
-    interruptor
+    trilho_kad,
+    c110v
   );
 };
 
