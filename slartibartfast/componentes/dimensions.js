@@ -45,12 +45,5 @@ dim.interruptor = {
   size: [14, dim.caixa.paredes[y], 8.5],
 };
 
-dim.kad = {
-  slot: [10.5, 6.4, 20],
-  suporte: [12, 10, 10],
-  altura_parafuso: 4,
-  trilho: [45, 0, 6.5]
-};
-
 module.exports = { dim };
  
