@@ -45,5 +45,15 @@ dim.interruptor = {
   size: [14, dim.caixa.paredes[y], 8.5],
 };
 
+dim.terminal = {
+  terminal: [8, 24, 10], 
+  suporte: [5, 24, 17],
+  espaco_entre_suportes: 2,
+  recuo: 14,
+  slot_ziptie: [6, 5, 2],
+  espaco_ziptie_superior: 2,
+  radius_buraco: 3.5
+}
+
 module.exports = { dim };
  

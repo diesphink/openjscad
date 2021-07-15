@@ -1,4 +1,4 @@
-const { subtract, union } = require("@jscad/modeling/src/operations/booleans");
+const { subtract, union, intersect } = require("@jscad/modeling/src/operations/booleans");
 const { rotateZ } = require("@jscad/modeling/src/operations/transforms");
 
 const { align } = require("sph_jscad_utils/align.js");
@@ -9,6 +9,8 @@ const { gen_caixa, gen_suportes } = require("./componentes/caixa.js");
 const { wago3er } = require("./componentes/wago-3er-solo.js");
 const { dim } = require("./componentes/dimensions.js");
 const { buraco_kad_holder } = require("sph_jscad_utils/kad_holder.js");
+const { gen_terminal, gen_buraco_terminal } = require("./componentes/terminal.js");
+const { cuboid } = require("@jscad/modeling/src/primitives");
 
 const x = 0;
 const y = 1;
@@ -28,7 +30,7 @@ const main = (params) => {
 
   var wagos = rotateZ(Math.PI / 2, wago3er());
   wagos = union(wagos, align(wagos, { ref: wagos, beginToEnd: "x", margins: [3, 0, 0] }));
-  wagos = align(wagos, { ref: caixa, center: "x", begin: "yz" });
+  wagos = align(wagos, { ref: caixa, center: "x", begin: "yz", margins: dim.caixa.paredes });
 
   let relay = align(gen_relay(), {
     ref: caixa,
@@ -51,12 +53,15 @@ const main = (params) => {
     margins: [0, 5, 0],
   });
 
+  let terminal = align(gen_terminal(), { ref: caixa, center: "x", end: "y", begin: "z", margins: dim.caixa.paredes });
+
   let suportes = gen_suportes(caixa, { axis: "y" });
 
   return subtract(
-    union(caixa, tomada, wagos, suportes, relay),
+    union(caixa, tomada, wagos, suportes, terminal, relay),
     gen_buraco_tomada(tomada),
     gen_buraco_relay(relay),
+    gen_buraco_terminal(terminal, dim.caixa.paredes[y]),
     trilho_kad,
     c110v
   );
