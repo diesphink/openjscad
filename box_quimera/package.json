@@ -1,0 +1,15 @@
+{
+  "name": "box_quimera",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@jscad/modeling": "^2.10.0",
+    "sph_jscad_utils": "file:../sph_jscad_utils"
+  }
+}
