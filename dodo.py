@@ -15,7 +15,7 @@ colorama.init()
 DOIT_CONFIG = {'verbosity': 1, 'reporter':'executed-only', 'default_tasks': ['scad_to_stl', 'jscad_to_stl', 'stl_to_gcode']}
 
 OPENSCAD = 'openscad'
-OPENJSCAD = 'openjscad'
+OPENJSCAD = 'jscad'
 
 SLIC3R = '/home/sphink/opt/prusa/prusa-slicer.AppImage'
 SLIC3R_PROFILE_FOLDER = './slicer_profiles'
@@ -170,6 +170,8 @@ def task_scad_to_stl():
         if root.endswith('lib'):
             continue
         for scad in glob.glob(root + '/*.scad'):
+            if 'node_modules' in scad:
+                continue
             (pathstl, stl) = output_for_scad(scad)
             pathdeps = os.path.dirname(depfile_for_scad(scad))
             yield {
@@ -190,6 +192,8 @@ def task_jscad_to_stl():
         if root.endswith('lib'):
             continue
         for jscad in glob.glob(root + '/*.jscad'):
+            if 'node_modules' in jscad:
+                continue
             (pathstl, stl, tmp) = output_for_jscad(jscad)
             # pathdeps = os.path.dirname(depfile_for_jscad(jscad))
             yield {
@@ -209,6 +213,8 @@ def task_stl_to_gcode():
 
     for root, dirs, files in os.walk("."):
         for stl in glob.glob(root + '/*.stl'):
+            if 'node_modules' in stl:
+                continue
             (pathgcode, gcode) = output_for_stl(stl)
 
             slic3r_properties = slic3r_properties_for_stl(stl)
