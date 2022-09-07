@@ -4,7 +4,7 @@ const z = 2;
 
 const dim = {};
 
-dim.caixa = {
+dim.caixa1 = {
   size: [130, 70, 35],
   paredes: [2, 2, 7],
   innerRadius: 1,
@@ -14,7 +14,7 @@ dim.caixa = {
 dim.tomada = {
   superior: [43.5, 19, 24],
   inferior: [35.4, 23, 21],
-  buraco: [37, dim.caixa.paredes[y], 24],
+  buraco: [37, dim.caixa1.paredes[y], 24],
   paredes: [6, 0, 0],
 };
 
@@ -42,18 +42,40 @@ dim.relay = {
 dim.relay.posicao_buraco[z] = dim.relay.placa[z] + 3;
 
 dim.interruptor = {
-  size: [14, dim.caixa.paredes[y], 8.5],
+  size: [14, dim.caixa1.paredes[y], 8.5],
 };
 
 dim.terminal = {
-  terminal: [8, 24, 10], 
+  terminal: [8, 24, 10],
   suporte: [5, 24, 17],
   espaco_entre_suportes: 2,
   recuo: 14,
   slot_ziptie: [6, 5, 2],
   espaco_ziptie_superior: 2,
-  radius_buraco: 3.5
+  radius_buraco: 3.5,
+};
+
+dim.caixa2 = {
+  size: [130, 130, 52],
+  paredes: [2, 2, 7],
+  innerRadius: 1,
+  outerRadius: 2,
+};
+
+dim.fonte5v = {
+  size: [99, 160, 42],
+  x_parede: 3,
+  y_folga_cabos: 60,
+  y_espaco_conectores: 15,
+  parafuso: {
+    distancia_y: 5,
+    distancia_z: 26,
+    diameter: 3,
+  }
+};
+
+dim.leddriver = {
+  size: [21.5, 88, 39]
 }
 
 module.exports = { dim };
- 

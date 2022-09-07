@@ -15,7 +15,7 @@ const gen_tomada = () => {
   let dim_base_tomada = [
     superior[x] + paredes[x],
     superior[y] + inferior[y] + paredes[y],
-    dim.caixa.size[z] + paredes[z],
+    dim.caixa1.size[z] + paredes[z],
   ];
 
   let base_tomada = sphRoundedCuboid({ size: dim_base_tomada, roundRadius: 3, straightOn: 'z' });
