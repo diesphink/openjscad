@@ -4,3 +4,5 @@ node_modules/
 /things/
 /venv/
 /slartibartfast/package-lock.json
+.vscode/data
+.vscode/extensions

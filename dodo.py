@@ -17,7 +17,7 @@ DOIT_CONFIG = {'verbosity': 1, 'reporter':'executed-only', 'default_tasks': ['sc
 OPENSCAD = 'openscad'
 OPENJSCAD = 'jscad'
 
-SLIC3R = '/home/sphink/opt/prusa/prusa-slicer.AppImage'
+SLIC3R = 'prusa-slicer'
 SLIC3R_PROFILE_FOLDER = './slicer_profiles'
 SLIC3R_DEFAULT_PROFILES = ['default', 'pla', 'normal']
 
